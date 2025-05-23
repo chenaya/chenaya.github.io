@@ -5,6 +5,8 @@ const row = canvas.height / unit;
 const column = canvas.width / unit;
 let gameSpeed = 100;
 
+// alert("Avoid the red blocks \nand collect the yellow ones ");
+
 let snake = []; //array中的每個元素，都是一個物件，obj的工作是儲存身體的x,y座標
 function createSnake() {
   snake[0] = {
@@ -52,6 +54,50 @@ class Fruit {
           overlapping = false;
         }
       }
+
+      if (new_x == myObstacle.x && new_y == myObstacle.y) {
+        overlapping = true;
+      }
+    }
+
+    do {
+      new_x = Math.floor(Math.random() * column) * unit;
+      new_y = Math.floor(Math.random() * row) * unit;
+      checkOverlap(new_x, new_y);
+    } while (overlapping);
+
+    this.x = new_x;
+    this.y = new_y;
+  }
+}
+
+class Obstacle {
+  constructor() {
+    this.x = Math.floor(Math.random() * column) * unit;
+    this.y = Math.floor(Math.random() * row) * unit;
+  }
+
+  drawObstacle() {
+    ctx.fillStyle = "red";
+    ctx.fillRect(this.x, this.y, unit, unit);
+  }
+
+  pickLocation() {
+    //不能跟蛇的身體同位置
+    let overlapping = false;
+    let new_x;
+    let new_y;
+
+    function checkOverlap(new_x, new_y) {
+      for (let i = 0; i < snake.length; i++) {
+        if (new_x == snake[i].x && new_y == snake[i].y) {
+          overlapping = true;
+          return;
+        } else {
+          //避免下面do while無限迴圈
+          overlapping = false;
+        }
+      }
     }
 
     do {
@@ -68,6 +114,7 @@ class Fruit {
 //初始設定
 createSnake();
 let myFruit = new Fruit();
+let myObstacle = new Obstacle();
 window.addEventListener("keydown", changeDirection);
 let dir = "Right";
 function changeDirection(e) {
@@ -106,11 +153,20 @@ function draw() {
     }
   }
 
+  //if 撞到障礙物
+  //snake[0].x == myFruit.x && snake[0].y == myFruit.y
+  if (snake[0].x == myObstacle.x && snake[0].y == myObstacle.y) {
+    clearInterval(myGame);
+    alert("Game over !");
+    return;
+  }
+
   // 每 draw 一次 => 畫布就設定為黑色 => 覆蓋舊蛇
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   myFruit.drawFruit();
+  myObstacle.drawObstacle();
 
   for (let i = 0; i < snake.length; i++) {
     if (i == 0) {
@@ -162,19 +218,11 @@ function draw() {
   // snake 吃到果實 => snake.unshift()
   // snake 沒吃果實(移動) => snake.unshift()+snake.pop()
 
-  // // if 有無吃到果實
-  // if (snake[0].x == myFruit.x && snake[0].y == myFruit.y) {
-  //   //重新選位，畫新果實，更新分數
-  //   myFruit.pickLocation();
-  // } else {
-  //   snake.pop();
-  // }
-
   // (吃到果實)建議改成：
   if (newHead.x == myFruit.x && newHead.y == myFruit.y) {
     myFruit.pickLocation(); //重新選位
     score++; //更新分數
-    gameSpeed -= 3;
+    gameSpeed -= 5;
     setGameSpeed(gameSpeed);
     setHighestScore(score);
     document.getElementById("myScore").innerHTML =
@@ -190,25 +238,31 @@ function draw() {
   window.addEventListener("keydown", changeDirection);
 }
 
-let myGame = setInterval(draw, gameSpeed); //setInterval 每隔一段時間重複執行某個function
+let myGame = setInterval(draw, gameSpeed);
 
 function loadHighestScore() {
-  if (localStorage.getItem("highestScore") == null) {
+  if (localStorage.getItem("level2highestScore") == null) {
     highestScore = 0;
   } else {
-    highestScore = Number(localStorage.getItem("highestScore"));
+    highestScore = Number(localStorage.getItem("level2highestScore"));
   }
 }
 
 function setHighestScore(score) {
   if (score > highestScore) {
-    localStorage.setItem("highestScore", score);
+    localStorage.setItem("level2highestScore", score);
     highestScore = score;
   }
 }
 
 function setGameSpeed(newSpeed) {
-  gameSpeed = newSpeed;
-  clearInterval(myGame);
-  myGame = setInterval(draw, gameSpeed);
+  if (newSpeed > 10) {
+    gameSpeed = newSpeed;
+    clearInterval(myGame);
+    myGame = setInterval(draw, gameSpeed);
+  } else {
+    gameSpeed = 10;
+    clearInterval(myGame);
+    myGame = setInterval(draw, gameSpeed);
+  }
 }
