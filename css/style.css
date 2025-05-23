@@ -9,7 +9,7 @@ ul {
 }
 
 body {
-  background-color: black;
+  background-color: rgb(4, 4, 55);
   display: flex;
   flex-direction: column;
   align-items: center;

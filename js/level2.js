@@ -5,7 +5,7 @@ const row = canvas.height / unit;
 const column = canvas.width / unit;
 let gameSpeed = 100;
 
-// alert("Avoid the red blocks \nand collect the yellow ones ");
+alert("Avoid the red blocks \nand collect the yellow ones ");
 
 let snake = []; //array中的每個元素，都是一個物件，obj的工作是儲存身體的x,y座標
 function createSnake() {

@@ -6,6 +6,14 @@ const column = canvas.width / unit;
 let gameSpeed = 100;
 let isAccelerating = false;
 let obstacles = [];
+let myGame;
+const ready = confirm(
+  "Avoid the red blocks \n(they will increase as your score gets higher)\nand collect the yellow ones to earn points!\n\nAre you ready?"
+);
+
+if (ready) {
+  myGame = setInterval(draw, gameSpeed);
+}
 
 let snake = []; //array中的每個元素，都是一個物件，obj的工作是儲存身體的x,y座標
 function createSnake() {
@@ -136,7 +144,6 @@ function drawBasicGrid(ctx, width, height, cellSize) {
 //初始設定
 createSnake();
 let myFruit = new Fruit();
-// obstacles[0] = new Obstacle();
 obstacles.push(new Obstacle());
 window.addEventListener("keydown", changeDirection);
 let dir = "Right";
@@ -293,7 +300,7 @@ function draw() {
   window.addEventListener("keydown", changeDirection);
 }
 
-let myGame = setInterval(draw, gameSpeed);
+// let myGame = setInterval(draw, gameSpeed);
 
 function loadHighestScore() {
   if (localStorage.getItem("level3highestScore") == null) {
